@@ -24,24 +24,33 @@ void process_image_callback(const sensor_msgs::Image img)
 {
 
     int white_pixel = 255;
-    bool ball_found = false;
-    int row = 0;
-    int width = img.step;
+    int width = img.width;
     int height = img.height;
-    int column_found = 0;
+    int col_sum = 0;
+    int num_white = 0;
+    int third_img = width/3;
     
 
     // TODO: Loop through each pixel in the image and check if there's a bright white one
-      for (row = 0; row < height && ball_found == false; row++)
-    {
-        for (int i = 0; i < width && ball_found == false; i++)
+
+        for (int i = 0; i < height*width; i=i+3)
         {   
-            int j = row*width + i;
-            if (img.data[j] == white_pixel && img.data[j+1] == white_pixel)
+            if (img.data[i] == white_pixel && img.data[i+1] == white_pixel && img.data[i+2] == white_pixel)
             {   
-                column_found = i/3;
-                  int third_img = width/3;
-                // Left turn     
+           
+                int col = (i % (width*3)) / 3;
+                col_sum += col;
+                num_white += 1;
+            }
+		}
+  
+  if (num_white == 0)  {
+    drive_robot(0.0, 0.0);
+  }
+  else {
+                 int column_found = col_sum/num_white;
+  
+                  // Left turn     
                   if (column_found < third_img) {
                 drive_robot(0.1, 0.2);  
                   }
@@ -50,19 +59,12 @@ void process_image_callback(const sensor_msgs::Image img)
                 drive_robot(0.1, -0.2);
                 }
                 // Straight ahead
-                else if (column_found > third_img && column_found < (2*third_img)) { 
+                else { 
                 drive_robot(0.2, 0.0); 
-                  }
-                //Stop when no white ball is seen
-                else {
-                drive_robot(0.0, 0.0);
                 }
-                   
-            }
-		}
-    }
-  
-
+             
+  }
+   
 }
 
 
