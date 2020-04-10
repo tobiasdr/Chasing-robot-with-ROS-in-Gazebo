@@ -26,6 +26,7 @@ void process_image_callback(const sensor_msgs::Image img)
     int white_pixel = 255;
     int width = img.width;
     int height = img.height;
+    int step = img.step; // step = 3*width;
     int col_sum = 0;
     int num_white = 0;
     int third_img = width/3;
@@ -33,12 +34,12 @@ void process_image_callback(const sensor_msgs::Image img)
 
     // TODO: Loop through each pixel in the image and check if there's a bright white one
 
-        for (int i = 0; i+2 < height*width; i=i+3)
+        for (int i = 0; i+2 < height*step; i=i+3)
         {   
             if (img.data[i] == white_pixel && img.data[i+1] == white_pixel && img.data[i+2] == white_pixel)
             {   
            
-                int col = (i % (width*3)) / 3;
+                int col = (i % step) / 3;
                 col_sum += col;
                 num_white += 1;
             }
